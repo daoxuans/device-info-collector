@@ -86,6 +86,41 @@ type DeviceInfo struct {
 	CanvasFingerprint string `json:"canvasFingerprint"`
 	WebGLFingerprint  string `json:"webglFingerprint"`
 	FontFingerprint   string `json:"fontFingerprint"`
+	// 音频指纹
+	AudioFingerprint string `json:"audioFingerprint"`
+	// 屏幕详细信息
+	ScreenOrientation string `json:"screenOrientation"`
+	ColorGamut        string `json:"colorGamut"`
+	HDR               string `json:"hdr"`
+	RefreshRate       string `json:"refreshRate"`
+	// 网络详细信息
+	DownlinkMax string `json:"downlinkMax"`
+	NetworkType string `json:"networkType"`
+	// 性能信息
+	MemoryInfo       string `json:"memoryInfo"`
+	NavigationTiming string `json:"navigationTiming"`
+	// 键盘布局
+	KeyboardLayout string `json:"keyboardLayout"`
+	// 语言偏好
+	Languages string `json:"languages"`
+	// 媒体能力
+	MediaCapabilities string `json:"mediaCapabilities"`
+	VideoCodecs       string `json:"videoCodecs"`
+	AudioCodecs       string `json:"audioCodecs"`
+	// WebGL详细信息
+	WebGLVendor   string `json:"webglVendor"`
+	WebGLRenderer string `json:"webglRenderer"`
+	// 安全与隐私
+	AdBlocker   string `json:"adBlocker"`
+	PrivateMode string `json:"privateMode"`
+	// 时间信息
+	TimezoneOffset string `json:"timezoneOffset"`
+	SystemTime     string `json:"systemTime"`
+	// Pointer能力
+	PointerType  string `json:"pointerType"`
+	HoverCapable string `json:"hoverCapable"`
+	// 动画帧率
+	AnimationFrameRate string `json:"animationFrameRate"`
 }
 
 // 限流器结构
@@ -289,7 +324,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
             </div>
 
             <div class="info-card">
-                <h3>�🌐 浏览器信息</h3>
+                <h3>🌐 浏览器信息</h3>
                 <div class="info-item"><span class="info-label">User Agent:</span><span class="info-value" id="userAgent">检测中...</span></div>
                 <div class="info-item"><span class="info-label">平台:</span><span class="info-value" id="platform">检测中...</span></div>
                 <div class="info-item"><span class="info-label">语言:</span><span class="info-value" id="language">检测中...</span></div>
@@ -370,6 +405,61 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
                 <div class="info-item"><span class="info-label">位置详情:</span><span class="info-value" id="locationDetails">获取中...</span></div>
                 <div class="info-item"><span class="info-label">通知权限:</span><span class="info-value" id="notifications">检测中...</span></div>
                 <div class="info-item"><span class="info-label">剪贴板:</span><span class="info-value" id="clipboard">检测中...</span></div>
+                <div class="info-item"><span class="info-label">广告拦截:</span><span class="info-value" id="adBlocker">检测中...</span></div>
+                <div class="info-item"><span class="info-label">隐私模式:</span><span class="info-value" id="privateMode">检测中...</span></div>
+            </div>
+
+            <div class="info-card">
+                <h3>🎨 屏幕与显示</h3>
+                <div class="info-item"><span class="info-label">屏幕方向:</span><span class="info-value" id="screenOrientation">检测中...</span></div>
+                <div class="info-item"><span class="info-label">色域:</span><span class="info-value" id="colorGamut">检测中...</span></div>
+                <div class="info-item"><span class="info-label">HDR支持:</span><span class="info-value" id="hdr">检测中...</span></div>
+                <div class="info-item"><span class="info-label">刷新率:</span><span class="info-value" id="refreshRate">检测中...</span></div>
+                <div class="info-item"><span class="info-label">动画帧率:</span><span class="info-value" id="animationFrameRate">检测中...</span></div>
+            </div>
+
+            <div class="info-card">
+                <h3>🌐 网络详情</h3>
+                <div class="info-item"><span class="info-label">网络类型:</span><span class="info-value" id="networkType">检测中...</span></div>
+                <div class="info-item"><span class="info-label">最大下行速度:</span><span class="info-value" id="downlinkMax">检测中...</span></div>
+            </div>
+
+            <div class="info-card">
+                <h3>⚡ 性能信息</h3>
+                <div class="info-item"><span class="info-label">内存使用:</span><span class="info-value" id="memoryInfo">检测中...</span></div>
+                <div class="info-item"><span class="info-label">导航计时:</span><span class="info-value" id="navigationTiming">检测中...</span></div>
+            </div>
+
+            <div class="info-card">
+                <h3>🎵 媒体能力</h3>
+                <div class="info-item"><span class="info-label">媒体能力:</span><span class="info-value" id="mediaCapabilities">检测中...</span></div>
+                <div class="info-item"><span class="info-label">视频编解码器:</span><span class="info-value" id="videoCodecs">检测中...</span></div>
+                <div class="info-item"><span class="info-label">音频编解码器:</span><span class="info-value" id="audioCodecs">检测中...</span></div>
+            </div>
+
+            <div class="info-card">
+                <h3>🎮 WebGL详情</h3>
+                <div class="info-item"><span class="info-label">WebGL供应商:</span><span class="info-value" id="webglVendor">检测中...</span></div>
+                <div class="info-item"><span class="info-label">WebGL渲染器:</span><span class="info-value" id="webglRenderer">检测中...</span></div>
+            </div>
+
+            <div class="info-card">
+                <h3>⌨️ 输入设备</h3>
+                <div class="info-item"><span class="info-label">键盘布局:</span><span class="info-value" id="keyboardLayout">检测中...</span></div>
+                <div class="info-item"><span class="info-label">指针类型:</span><span class="info-value" id="pointerType">检测中...</span></div>
+                <div class="info-item"><span class="info-label">悬停能力:</span><span class="info-value" id="hoverCapable">检测中...</span></div>
+            </div>
+
+            <div class="info-card">
+                <h3>🌍 语言与时间</h3>
+                <div class="info-item"><span class="info-label">语言列表:</span><span class="info-value" id="languages">检测中...</span></div>
+                <div class="info-item"><span class="info-label">时区偏移:</span><span class="info-value" id="timezoneOffset">检测中...</span></div>
+                <div class="info-item"><span class="info-label">系统时间:</span><span class="info-value" id="systemTime">检测中...</span></div>
+            </div>
+
+            <div class="info-card">
+                <h3>🔊 音频指纹</h3>
+                <div class="info-item"><span class="info-label">音频指纹:</span><span class="info-value" id="audioFingerprint">检测中...</span></div>
             </div>
 
         </div>
@@ -380,7 +470,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
     </div>
 
     <script>
-        function collectDeviceInfo() {
+        async function collectDeviceInfo() {
             const statusElement = document.getElementById('status');
             statusElement.className = 'status';
             statusElement.textContent = '正在收集设备信息...';
@@ -427,8 +517,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
                     deviceOrientation: 'DeviceOrientationEvent' in window ? '支持' : '不支持',
                     vibration: 'vibrate' in navigator ? '支持' : '不支持',
                     clipboard: 'clipboard' in navigator ? '支持' : '不支持',
-                    accelerometer: 'Accelerometer' in window ? '支持' : '不支持',
-                    gyroscope: 'Gyroscope' in window ? '支持' : '不支持',
+                    accelerometer: checkAccelerometer(),
+                    gyroscope: checkGyroscope(),
                     magnetometer: 'Magnetometer' in window ? '支持' : '不支持',
                     gamepadAPI: 'getGamepads' in navigator ? '支持' : '不支持',
                     vrDisplay: 'getVRDisplays' in navigator ? '支持' : '不支持',
@@ -446,7 +536,42 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
                     // Canvas指纹
                     canvasFingerprint: generateCanvasFingerprint(),
                     webglFingerprint: generateWebGLFingerprint(),
-                    fontFingerprint: generateFontFingerprint()
+                    fontFingerprint: generateFontFingerprint(),
+                    // 音频指纹
+                    audioFingerprint: getAudioFingerprint(),
+                    // 屏幕详细信息
+                    screenOrientation: getScreenOrientation(),
+                    colorGamut: getColorGamut(),
+                    hdr: getHDR(),
+                    refreshRate: await getRefreshRate(),
+                    // 网络详细信息
+                    downlinkMax: getDownlinkMax(),
+                    networkType: getNetworkType(),
+                    // 性能信息
+                    memoryInfo: getMemoryInfo(),
+                    navigationTiming: getNavigationTiming(),
+                    // 键盘布局
+                    keyboardLayout: await getKeyboardLayout(),
+                    // 语言偏好
+                    languages: getLanguages(),
+                    // 媒体能力
+                    mediaCapabilities: await getMediaCapabilities(),
+                    videoCodecs: await getVideoCodecs(),
+                    audioCodecs: await getAudioCodecs(),
+                    // WebGL详细信息
+                    webglVendor: getWebGLVendor(),
+                    webglRenderer: getWebGLRenderer(),
+                    // 安全与隐私
+                    adBlocker: await detectAdBlocker(),
+                    privateMode: await detectPrivateMode(),
+                    // 时间信息
+                    timezoneOffset: getTimezoneOffset(),
+                    systemTime: getSystemTime(),
+                    // Pointer能力
+                    pointerType: getPointerType(),
+                    hoverCapable: getHoverCapable(),
+                    // 动画帧率
+                    animationFrameRate: await getAnimationFrameRate()
                 };
                 
                 console.log('准备发送的数据:', deviceInfo);
@@ -564,40 +689,58 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
             }
         }
         
-        function checkPDFViewer() {
-            // 检查多种 PDF 支持方式
+        function checkAccelerometer() {
+            // 检测加速度计支持的多种方式
             const checks = [];
             
-            // 检查 MIME 类型
-            if (navigator.mimeTypes && navigator.mimeTypes['application/pdf']) {
-                checks.push('MIME支持');
+            // 方式1: 检查DeviceMotionEvent（最常用的方式）
+            if (typeof DeviceMotionEvent !== 'undefined') {
+                checks.push('DeviceMotion API');
             }
             
-            // 检查插件
-            if (navigator.plugins) {
-                for (let i = 0; i < navigator.plugins.length; i++) {
-                    const plugin = navigator.plugins[i];
-                    if (plugin.name.toLowerCase().includes('pdf')) {
-                        checks.push('插件支持');
-                        break;
-                    }
-                }
+            // 方式2: 检查新的Sensor API
+            if (typeof Accelerometer !== 'undefined') {
+                checks.push('Accelerometer API');
             }
             
-            // 检查内置 PDF 查看器
-            if (window.navigator.pdfViewerEnabled !== undefined) {
-                if (window.navigator.pdfViewerEnabled) {
-                    checks.push('内置查看器');
-                }
-            } else {
-                // Firefox/Chrome 的内置 PDF 支持
-                const userAgent = navigator.userAgent.toLowerCase();
-                if (userAgent.includes('firefox') || userAgent.includes('chrome') || userAgent.includes('edge')) {
-                    checks.push('可能支持内置');
-                }
+            // 方式3: 检查是否可以监听devicemotion事件
+            if (window.ondevicemotion !== undefined) {
+                checks.push('事件监听');
             }
             
-            return checks.length > 0 ? checks.join(', ') : '不支持';
+            // 移动设备通常都有加速度计
+            if (checks.length === 0 && /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                return '支持（移动设备）';
+            }
+            
+            return checks.length > 0 ? '支持 (' + checks.join(', ') + ')' : '不支持';
+        }
+        
+        function checkGyroscope() {
+            // 检测陀螺仪支持的多种方式
+            const checks = [];
+            
+            // 方式1: 检查DeviceOrientationEvent（最常用的方式）
+            if (typeof DeviceOrientationEvent !== 'undefined') {
+                checks.push('DeviceOrientation API');
+            }
+            
+            // 方式2: 检查新的Sensor API
+            if (typeof Gyroscope !== 'undefined') {
+                checks.push('Gyroscope API');
+            }
+            
+            // 方式3: 检查是否可以监听deviceorientation事件
+            if (window.ondeviceorientation !== undefined) {
+                checks.push('事件监听');
+            }
+            
+            // 移动设备通常都有陀螺仪
+            if (checks.length === 0 && /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                return '支持（移动设备）';
+            }
+            
+            return checks.length > 0 ? '支持 (' + checks.join(', ') + ')' : '不支持';
         }
         
         function checkPDFViewer() {
@@ -708,72 +851,57 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
             if (navigator.connection || navigator.mozConnection || navigator.webkitConnection) {
                 const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
                 
-                let info = [];
+                let connectionType = '未知';
+                let speedInfo = '';
                 
-                // 有效连接类型
-                if (conn.effectiveType) {
-                    const typeMap = {
-                        'slow-2g': '慢速2G',
-                        '2g': '2G',
-                        '3g': '3G', 
-                        '4g': '4G'
-                    };
-                    info.push(typeMap[conn.effectiveType] || conn.effectiveType);
-                }
-                
-                // 连接类型
+                // 只使用type字段判断连接类型（effectiveType仅表示速度等级，不表示连接类型）
                 if (conn.type) {
-                    const connectionTypeMap = {
-                        'bluetooth': '蓝牙',
-                        'cellular': '蜂窝网络',
-                        'ethernet': '以太网',
-                        'none': '无连接',
-                        'wifi': 'WiFi',
-                        'wimax': 'WiMAX',
-                        'other': '其他',
-                        'unknown': '未知'
-                    };
-                    info.push(connectionTypeMap[conn.type] || conn.type);
-                }
-                
-                // 下行速度
-                if (conn.downlink !== undefined) {
-                    info.push('下行: ' + conn.downlink + 'Mbps');
-                }
-                
-                // RTT延迟
-                if (conn.rtt !== undefined) {
-                    info.push('RTT: ' + conn.rtt + 'ms');
-                }
-                
-                // 节省数据模式
-                if (conn.saveData !== undefined) {
-                    info.push('节省数据: ' + (conn.saveData ? '开启' : '关闭'));
-                }
-                
-                return info.length > 0 ? info.join(' | ') : '基本连接信息';
-            }
-            
-            // 备用检测方法
-            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            if (!connection) {
-                // 通过其他方式推断连接类型
-                let fallbackInfo = [];
-                
-                // 检查在线状态
-                fallbackInfo.push(navigator.onLine ? '在线' : '离线');
-                
-                // 检查是否可能是移动设备
-                if (/Mobile|Android|iPhone|iPad/i.test(navigator.userAgent)) {
-                    fallbackInfo.push('可能是移动网络');
+                    switch(conn.type) {
+                        case 'cellular':
+                            connectionType = '蜂窝网络';
+                            break;
+                        case 'wifi':
+                            connectionType = 'WiFi';
+                            break;
+                        case 'ethernet':
+                            connectionType = '有线网络';
+                            break;
+                        case 'bluetooth':
+                            connectionType = '蓝牙';
+                            break;
+                        case 'wimax':
+                            connectionType = 'WiMAX';
+                            break;
+                        case 'none':
+                            connectionType = '无连接';
+                            break;
+                        default:
+                            connectionType = '其他';
+                    }
                 } else {
-                    fallbackInfo.push('可能是宽带');
+                    // 如果没有type字段，显示effectiveType作为参考
+                    if (conn.effectiveType) {
+                        connectionType = '未知 (网速等级: ' + conn.effectiveType + ')';
+                    }
                 }
                 
-                return fallbackInfo.join(' | ');
+                // 添加速度信息
+                const speedParts = [];
+                if (conn.downlink !== undefined && conn.downlink > 0) {
+                    speedParts.push('下行' + conn.downlink + 'Mbps');
+                }
+                if (conn.rtt !== undefined && conn.rtt > 0) {
+                    speedParts.push('延迟' + conn.rtt + 'ms');
+                }
+                
+                if (speedParts.length > 0) {
+                    speedInfo = ' (' + speedParts.join(', ') + ')';
+                }
+                
+                return connectionType + speedInfo;
             }
             
-            return '无法检测连接信息';
+            return '不支持 Network Information API';
         }
         
         // 获取地理位置详情
@@ -1022,6 +1150,369 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
             }
             
             return Math.abs(hash).toString(16);
+        }
+
+        // ========== 新增检测函数 ==========
+        
+        // 音频指纹
+        function getAudioFingerprint() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return '不支持';
+                
+                const context = new AudioContext();
+                const oscillator = context.createOscillator();
+                const analyser = context.createAnalyser();
+                const gainNode = context.createGain();
+                const scriptProcessor = context.createScriptProcessor(4096, 1, 1);
+                
+                gainNode.gain.value = 0; // 静音
+                oscillator.type = 'triangle';
+                oscillator.connect(analyser);
+                analyser.connect(scriptProcessor);
+                scriptProcessor.connect(gainNode);
+                gainNode.connect(context.destination);
+                
+                oscillator.start(0);
+                const fingerprint = [];
+                
+                scriptProcessor.onaudioprocess = function(event) {
+                    const output = event.outputBuffer.getChannelData(0);
+                    for (let i = 0; i < output.length; i++) {
+                        fingerprint.push(output[i].toString());
+                    }
+                    
+                    if (fingerprint.length > 30) {
+                        oscillator.disconnect();
+                        scriptProcessor.disconnect();
+                    }
+                };
+                
+                setTimeout(() => {
+                    context.close();
+                }, 100);
+                
+                return hashString(fingerprint.slice(0, 30).join(','));
+            } catch (e) {
+                return '生成失败';
+            }
+        }
+
+        // 屏幕方向
+        function getScreenOrientation() {
+            if (screen.orientation) {
+                return screen.orientation.type || '未知';
+            }
+            if (window.orientation !== undefined) {
+                return window.orientation === 0 ? 'portrait' : 'landscape';
+            }
+            return '不支持';
+        }
+
+        // 色域
+        function getColorGamut() {
+            if (window.matchMedia) {
+                if (window.matchMedia('(color-gamut: rec2020)').matches) return 'rec2020';
+                if (window.matchMedia('(color-gamut: p3)').matches) return 'p3';
+                if (window.matchMedia('(color-gamut: srgb)').matches) return 'srgb';
+            }
+            return '未知';
+        }
+
+        // HDR支持
+        function getHDR() {
+            if (window.matchMedia) {
+                if (window.matchMedia('(dynamic-range: high)').matches) return '支持';
+            }
+            return '不支持';
+        }
+
+        // 刷新率
+        function getRefreshRate() {
+            return new Promise((resolve) => {
+                let lastTime = performance.now();
+                let frames = 0;
+                
+                function measureFrame() {
+                    const currentTime = performance.now();
+                    frames++;
+                    
+                    if (frames >= 60 || currentTime - lastTime >= 1000) {
+                        const fps = Math.round((frames * 1000) / (currentTime - lastTime));
+                        resolve(fps + ' Hz');
+                    } else {
+                        requestAnimationFrame(measureFrame);
+                    }
+                }
+                
+                requestAnimationFrame(measureFrame);
+                setTimeout(() => resolve('测量超时'), 2000);
+            });
+        }
+
+        // 最大下行速度
+        function getDownlinkMax() {
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn && conn.downlinkMax) {
+                return conn.downlinkMax + ' Mbps';
+            }
+            return '未知';
+        }
+
+        // 网络类型详细
+        function getNetworkType() {
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn) {
+                const parts = [];
+                // type是真实的连接类型（wifi, ethernet, cellular等）
+                if (conn.type) {
+                    parts.push('连接类型: ' + conn.type);
+                }
+                // effectiveType是网络速度等级（slow-2g, 2g, 3g, 4g）
+                if (conn.effectiveType) {
+                    parts.push('速度等级: ' + conn.effectiveType);
+                }
+                // saveData表示用户是否启用了数据节省模式
+                if (conn.saveData !== undefined) {
+                    parts.push('省流模式: ' + (conn.saveData ? '开启' : '关闭'));
+                }
+                return parts.length > 0 ? parts.join(', ') : '未知';
+            }
+            return '不支持';
+        }
+
+        // 内存信息
+        function getMemoryInfo() {
+            if (performance.memory) {
+                const used = (performance.memory.usedJSHeapSize / 1048576).toFixed(2);
+                const total = (performance.memory.totalJSHeapSize / 1048576).toFixed(2);
+                const limit = (performance.memory.jsHeapSizeLimit / 1048576).toFixed(2);
+                return '已用: ' + used + 'MB, 总计: ' + total + 'MB, 限制: ' + limit + 'MB';
+            }
+            return '不支持';
+        }
+
+        // 导航计时
+        function getNavigationTiming() {
+            if (performance.timing) {
+                const timing = performance.timing;
+                const loadTime = timing.loadEventEnd - timing.navigationStart;
+                const domReady = timing.domContentLoadedEventEnd - timing.navigationStart;
+                return '加载时间: ' + loadTime + 'ms, DOM准备: ' + domReady + 'ms';
+            }
+            return '不支持';
+        }
+
+        // 键盘布局
+        function getKeyboardLayout() {
+            return new Promise((resolve) => {
+                if (navigator.keyboard && navigator.keyboard.getLayoutMap) {
+                    navigator.keyboard.getLayoutMap()
+                        .then(layoutMap => {
+                            const entries = Array.from(layoutMap.entries()).slice(0, 5);
+                            resolve(entries.length > 0 ? '支持 (' + entries.length + '个键位)' : '支持');
+                        })
+                        .catch(() => resolve('获取失败'));
+                } else {
+                    resolve('不支持');
+                }
+            });
+        }
+
+        // 语言列表
+        function getLanguages() {
+            if (navigator.languages) {
+                return navigator.languages.join(', ');
+            }
+            return navigator.language || '未知';
+        }
+
+        // 媒体能力
+        function getMediaCapabilities() {
+            return new Promise((resolve) => {
+                if (navigator.mediaCapabilities) {
+                    const config = {
+                        type: 'file',
+                        video: {
+                            contentType: 'video/mp4; codecs="avc1.42E01E"',
+                            width: 1920,
+                            height: 1080,
+                            bitrate: 2000000,
+                            framerate: 30
+                        }
+                    };
+                    
+                    navigator.mediaCapabilities.decodingInfo(config)
+                        .then(result => {
+                            resolve('支持 (平滑: ' + result.smooth + ', 省电: ' + result.powerEfficient + ')');
+                        })
+                        .catch(() => resolve('检测失败'));
+                } else {
+                    resolve('不支持');
+                }
+            });
+        }
+
+        // 视频编解码器
+        function getVideoCodecs() {
+            return new Promise((resolve) => {
+                const codecs = ['avc1.42E01E', 'vp8', 'vp9', 'av01.0.05M.08', 'hev1.1.6.L93.B0'];
+                const supported = [];
+                
+                codecs.forEach(codec => {
+                    const canPlay = document.createElement('video').canPlayType('video/mp4; codecs="' + codec + '"');
+                    if (canPlay) supported.push(codec);
+                });
+                
+                resolve(supported.length > 0 ? supported.join(', ') : '无支持编解码器');
+            });
+        }
+
+        // 音频编解码器
+        function getAudioCodecs() {
+            return new Promise((resolve) => {
+                const codecs = ['opus', 'vorbis', 'mp4a.40.2', 'flac', 'mp3'];
+                const supported = [];
+                
+                codecs.forEach(codec => {
+                    const canPlay = document.createElement('audio').canPlayType('audio/' + (codec === 'mp4a.40.2' ? 'mp4' : codec === 'mp3' ? 'mpeg' : codec) + (codec === 'mp4a.40.2' ? '; codecs="' + codec + '"' : ''));
+                    if (canPlay) supported.push(codec);
+                });
+                
+                resolve(supported.length > 0 ? supported.join(', ') : '无支持编解码器');
+            });
+        }
+
+        // WebGL供应商
+        function getWebGLVendor() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        return gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+                    }
+                }
+                return '未知';
+            } catch (e) {
+                return '获取失败';
+            }
+        }
+
+        // WebGL渲染器
+        function getWebGLRenderer() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    }
+                }
+                return '未知';
+            } catch (e) {
+                return '获取失败';
+            }
+        }
+
+        // 广告拦截检测
+        function detectAdBlocker() {
+            return new Promise((resolve) => {
+                const testAd = document.createElement('div');
+                testAd.innerHTML = '&nbsp;';
+                testAd.className = 'adsbox ad-placement carbon-ads';
+                testAd.style.position = 'absolute';
+                testAd.style.left = '-999px';
+                document.body.appendChild(testAd);
+                
+                setTimeout(() => {
+                    const detected = testAd.offsetHeight === 0 || window.getComputedStyle(testAd).display === 'none';
+                    document.body.removeChild(testAd);
+                    resolve(detected ? '检测到' : '未检测到');
+                }, 100);
+            });
+        }
+
+        // 隐私模式检测
+        function detectPrivateMode() {
+            return new Promise((resolve) => {
+                if (navigator.storage && navigator.storage.estimate) {
+                    navigator.storage.estimate().then(estimate => {
+                        // 隐私模式下配额通常很小
+                        resolve(estimate.quota < 120000000 ? '可能是' : '否');
+                    }).catch(() => resolve('检测失败'));
+                } else {
+                    resolve('不支持');
+                }
+            });
+        }
+
+        // 时区偏移
+        function getTimezoneOffset() {
+            const offset = new Date().getTimezoneOffset();
+            const hours = Math.floor(Math.abs(offset) / 60);
+            const minutes = Math.abs(offset) % 60;
+            const sign = offset > 0 ? '-' : '+';
+            return 'UTC' + sign + hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+        }
+
+        // 系统时间
+        function getSystemTime() {
+            return new Date().toLocaleString('zh-CN', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+        }
+
+        // 指针类型
+        function getPointerType() {
+            if (window.matchMedia) {
+                if (window.matchMedia('(pointer: fine)').matches) return 'fine (鼠标)';
+                if (window.matchMedia('(pointer: coarse)').matches) return 'coarse (触摸)';
+                if (window.matchMedia('(pointer: none)').matches) return 'none';
+            }
+            return '未知';
+        }
+
+        // 悬停能力
+        function getHoverCapable() {
+            if (window.matchMedia) {
+                if (window.matchMedia('(hover: hover)').matches) return '支持';
+                if (window.matchMedia('(hover: none)').matches) return '不支持';
+            }
+            return '未知';
+        }
+
+        // 动画帧率
+        function getAnimationFrameRate() {
+            return new Promise((resolve) => {
+                let lastTime = performance.now();
+                let frameCount = 0;
+                const frameTimes = [];
+                
+                function measureFrame(currentTime) {
+                    frameTimes.push(currentTime - lastTime);
+                    lastTime = currentTime;
+                    frameCount++;
+                    
+                    if (frameCount >= 30) {
+                        const avgFrameTime = frameTimes.reduce((a, b) => a + b) / frameTimes.length;
+                        const fps = Math.round(1000 / avgFrameTime);
+                        resolve(fps + ' FPS');
+                    } else {
+                        requestAnimationFrame(measureFrame);
+                    }
+                }
+                
+                requestAnimationFrame(measureFrame);
+                setTimeout(() => resolve('测量超时'), 2000);
+            });
         }
         
         function updateDisplay(info) {
