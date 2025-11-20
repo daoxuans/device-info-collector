@@ -467,6 +467,10 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
         <div class="actions">
             <button class="btn" onclick="collectDeviceInfo()">🔄 重新收集信息</button>
         </div>
+        
+        <div style="text-align: center; color: white; margin-top: 20px; padding: 20px; font-size: 0.9rem; opacity: 0.8;">
+            如您有疑问可联系daoxuans
+        </div>
     </div>
 
     <script>
