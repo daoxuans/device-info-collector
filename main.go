@@ -123,6 +123,24 @@ type DeviceInfo struct {
 	AnimationFrameRate string `json:"animationFrameRate"`
 }
 
+// Rating 评分结构体
+type Rating struct {
+	Score int `json:"score"`
+}
+
+// RatingStats 评分统计
+type RatingStats struct {
+	Total   int     `json:"total"`
+	Average float64 `json:"average"`
+	Counts  [5]int  `json:"counts"`
+}
+
+// 内存评分存储
+var (
+	ratingsMutex sync.Mutex
+	ratings      []int
+)
+
 // 限流器结构
 type RateLimiter struct {
 	requests map[string][]time.Time
@@ -300,6 +318,23 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
             transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
         }
         .btn:hover { background: #3182ce; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4); }
+        .rating-card {
+            background: white; border-radius: 15px; padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 20px; text-align: center;
+        }
+        .rating-card h3 { color: #4a5568; margin-bottom: 15px; font-size: 1.3rem; }
+        .stars { display: flex; justify-content: center; gap: 10px; margin: 15px 0; }
+        .star {
+            font-size: 2.5rem; cursor: pointer; transition: transform 0.2s ease, color 0.2s ease;
+            color: #cbd5e0; line-height: 1;
+        }
+        .star:hover, .star.active { color: #f6ad55; transform: scale(1.2); }
+        .rating-msg { margin-top: 10px; font-size: 0.95rem; color: #718096; min-height: 1.4em; }
+        .rating-stats { margin-top: 15px; font-size: 0.9rem; color: #4a5568; }
+        .rating-stats .avg { font-size: 2rem; font-weight: bold; color: #f6ad55; }
+        .rating-bar-row { display: flex; align-items: center; gap: 8px; margin: 3px 0; font-size: 0.85rem; }
+        .rating-bar-bg { flex: 1; background: #e2e8f0; border-radius: 4px; height: 10px; }
+        .rating-bar-fill { height: 10px; border-radius: 4px; background: #f6ad55; transition: width 0.4s; }
         @media (max-width: 768px) {
             .info-grid { grid-template-columns: 1fr; }
             .header h1 { font-size: 2rem; }
@@ -464,6 +499,19 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
         </div>
         
+        <div class="rating-card">
+            <h3>⭐ 给这个项目打个分</h3>
+            <div class="stars" id="starRow">
+                <span class="star" data-v="1" onclick="submitRating(1)" role="button" tabindex="0" aria-label="1星">★</span>
+                <span class="star" data-v="2" onclick="submitRating(2)" role="button" tabindex="0" aria-label="2星">★</span>
+                <span class="star" data-v="3" onclick="submitRating(3)" role="button" tabindex="0" aria-label="3星">★</span>
+                <span class="star" data-v="4" onclick="submitRating(4)" role="button" tabindex="0" aria-label="4星">★</span>
+                <span class="star" data-v="5" onclick="submitRating(5)" role="button" tabindex="0" aria-label="5星">★</span>
+            </div>
+            <div class="rating-msg" id="ratingMsg">点击星星进行评分</div>
+            <div class="rating-stats" id="ratingStats"></div>
+        </div>
+
         <div class="actions">
             <button class="btn" onclick="collectDeviceInfo()">🔄 重新收集信息</button>
         </div>
@@ -1526,7 +1574,91 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
             }
         }
         
-        document.addEventListener('DOMContentLoaded', collectDeviceInfo);
+        // 评分功能
+        function highlightStars(n) {
+            document.querySelectorAll('.star').forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.v) <= n);
+            });
+        }
+        document.querySelectorAll('.star').forEach(s => {
+            s.addEventListener('mouseover', () => highlightStars(parseInt(s.dataset.v)));
+            s.addEventListener('mouseleave', () => {
+                const current = parseInt(document.getElementById('starRow').dataset.selected || 0);
+                highlightStars(current);
+            });
+            s.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); submitRating(parseInt(s.dataset.v)); }
+            });
+        });
+
+        async function submitRating(score) {
+            document.getElementById('starRow').dataset.selected = score;
+            highlightStars(score);
+            const msg = document.getElementById('ratingMsg');
+            msg.textContent = '提交中...';
+            try {
+                const res = await fetch('/rate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ score: score })
+                });
+                const data = await res.json();
+                msg.textContent = data.status === 'success' ? '✅ 感谢您的评分！' : ('❌ ' + data.message);
+                loadRatingStats();
+            } catch (e) {
+                msg.textContent = '❌ 提交失败: ' + e.message;
+            }
+        }
+
+        async function loadRatingStats() {
+            try {
+                const res = await fetch('/rating-stats');
+                const data = await res.json();
+                const container = document.getElementById('ratingStats');
+                container.textContent = '';
+                if (data.status === 'success' && data.data && data.data.total > 0) {
+                    const s = data.data;
+
+                    const avgDiv = document.createElement('div');
+                    avgDiv.className = 'avg';
+                    avgDiv.textContent = s.average.toFixed(1) + ' / 5';
+                    container.appendChild(avgDiv);
+
+                    const totalDiv = document.createElement('div');
+                    totalDiv.textContent = '共 ' + s.total + ' 人评分';
+                    container.appendChild(totalDiv);
+
+                    const barsDiv = document.createElement('div');
+                    barsDiv.style.cssText = 'max-width:280px;margin:10px auto';
+                    for (let i = 5; i >= 1; i--) {
+                        const pct = s.total > 0 ? Math.round(s.counts[i-1] / s.total * 100) : 0;
+                        const row = document.createElement('div');
+                        row.className = 'rating-bar-row';
+
+                        const label = document.createElement('span');
+                        label.textContent = i + '★';
+                        row.appendChild(label);
+
+                        const bg = document.createElement('div');
+                        bg.className = 'rating-bar-bg';
+                        const fill = document.createElement('div');
+                        fill.className = 'rating-bar-fill';
+                        fill.style.width = pct + '%';
+                        bg.appendChild(fill);
+                        row.appendChild(bg);
+
+                        const count = document.createElement('span');
+                        count.textContent = s.counts[i-1];
+                        row.appendChild(count);
+
+                        barsDiv.appendChild(row);
+                    }
+                    container.appendChild(barsDiv);
+                }
+            } catch (e) { /* 忽略统计加载失败 */ }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { collectDeviceInfo(); loadRatingStats(); });
     </script>
 </body>
 </html>`
@@ -1535,10 +1667,69 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(html))
 }
 
+// 处理评分提交
+func rateHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	if r.Method != "POST" {
+		sendJSONResponse(w, http.StatusMethodNotAllowed, Response{Status: "error", Message: "Only POST method is allowed"})
+		return
+	}
+
+	ip := getClientIP(r)
+	if !rateLimiter.Allow(ip) {
+		sendJSONResponse(w, http.StatusTooManyRequests, Response{Status: "error", Message: "请求过于频繁，请稍后再试"})
+		return
+	}
+
+	var rating Rating
+	if err := json.NewDecoder(r.Body).Decode(&rating); err != nil {
+		sendJSONResponse(w, http.StatusBadRequest, Response{Status: "error", Message: "Invalid JSON format"})
+		return
+	}
+	if rating.Score < 1 || rating.Score > 5 {
+		sendJSONResponse(w, http.StatusBadRequest, Response{Status: "error", Message: "评分必须在 1 到 5 之间"})
+		return
+	}
+
+	ratingsMutex.Lock()
+	ratings = append(ratings, rating.Score)
+	ratingsMutex.Unlock()
+
+	fmt.Printf("收到评分 [%s] IP: %s, 分数: %d\n", time.Now().Format("2006-01-02 15:04:05"), ip, rating.Score)
+	sendJSONResponse(w, http.StatusOK, Response{Status: "success", Message: "感谢您的评分！"})
+}
+
+// 获取评分统计
+func ratingStatsHandler(w http.ResponseWriter, r *http.Request) {
+	ratingsMutex.Lock()
+	defer ratingsMutex.Unlock()
+
+	var stats RatingStats
+	sum := 0
+	for _, s := range ratings {
+		stats.Total++
+		stats.Counts[s-1]++
+		sum += s
+	}
+	if stats.Total > 0 {
+		stats.Average = float64(sum) / float64(stats.Total)
+	}
+
+	sendJSONResponse(w, http.StatusOK, Response{Status: "success", Data: stats})
+}
+
 func main() {
 	// 设置路由
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/collect", collectHandler)
+	http.HandleFunc("/rate", rateHandler)
+	http.HandleFunc("/rating-stats", ratingStatsHandler)
 
 	// 获取端口
 	port := os.Getenv("PORT")
